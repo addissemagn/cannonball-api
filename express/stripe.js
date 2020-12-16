@@ -25,8 +25,8 @@ const createStripeSession = async (user) => {
       },
     ],
     mode: 'payment',
-    success_url: `${process.env.FRONTEND_URL}/success?email=${user.email}`,
-    cancel_url: `${process.env.FRONTEND_URL}/sign-up?email=${user.email}`,
+    success_url: `${process.env.FRONTEND_URL}/success`,
+    cancel_url: `${process.env.FRONTEND_URL}/sign-up`,
   });
 
   return session.id;
