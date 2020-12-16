@@ -1,7 +1,7 @@
 {
-  "name": "netlify-express",
+  "name": "cannonball-backend",
   "version": "0.0.1",
-  "description": "Example of how to deploy a Express.js Netlify app.",
+  "description": "Cannonball 2T1",
   "main": "functions/server.js",
   "scripts": {
     "build": "netlify-lambda build express",
