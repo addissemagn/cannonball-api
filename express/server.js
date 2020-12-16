@@ -8,7 +8,13 @@ var cors = require("cors");
 
 require("dotenv").config();
 
-const { connectDatabase, getAllUsers, addUser, deleteUser } = require('./database');
+const {
+  connectDatabase,
+  getAllUsers,
+  addUser,
+  deleteUser,
+  updatePaymentStatus,
+} = require("./database");
 const { createStripeSession } = require('./stripe');
 
 connectDatabase();
@@ -47,14 +53,24 @@ router.post('/create-checkout-session', async (req, res) => {
   });
 })
 
-router.post('/webhook-success', async (req, res) => {
+router.post('/webhooks', async (req, res) => {
     // get customer_email off of it then update paymentSuccess in mongoDb
+    const { data, type } = req.body;
+
     try {
       console.log("/webhooks POST route hit! req.body: ", req.body);
+      if (type === "checkout.session.completed") {
+        const { object } = data;
+        const customer_email = object.customer_email;
+
+        console.log(`update payment succes: ${customer_email}`);
+
+        await updatePaymentStatus();
+      }
       res.send(200);
     } catch (err) {
       console.log("/webhooks route error: ", err);
-      res.send(200);
+      res.send(500);
     }
 });
 

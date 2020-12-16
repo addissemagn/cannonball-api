@@ -17,17 +17,27 @@ const connectDatabase = async () => {
 
 const addUser = async (user) => {
   try {
-    const response = await usersCollection.insertOne(user);
-    return response;
+    const res = await usersCollection.insertOne(user);
+    return res;
   } catch (err) { console.log(err); }
 }
 
 const getAllUsers = async () => {
   try {
-    const response = await usersCollection.find().toArray();
-    return response;
+    const res = await usersCollection.find().toArray();
+    return res;
   } catch (err) { console.log(err); }
 }
+
+const updatePaymentStatus = async (email) => {
+  try {
+    const res = await usersCollection.updateOne(
+      { email: email },
+      { paymentSuccess: true }
+    );
+    return res;
+  } catch (err) { console.log(err); }
+};
 
 const deleteUser = async (id) => {
   try {
@@ -41,4 +51,5 @@ module.exports = {
     getAllUsers,
     addUser,
     deleteUser,
+    updatePaymentStatus,
 }
