@@ -1,15 +1,23 @@
 const stripe = require('stripe')(process.env.STRIPE_KEY);
 
-const createStripeSession = async () => {
+const createStripeSession = async (user) => {
+  const giftCard = {
+      uberEats: 'Uber Eats',
+      netfix: 'Netflix',
+      apple: 'Apple',
+  }
+
   const session = await stripe.checkout.sessions.create({
+    customer_email: `${user.email}`,
     payment_method_types: ['card'],
     line_items: [
       {
         price_data: {
           currency: 'cad',
           product_data: {
-            name: 'Stubborn Attachments',
-            images: ['https://i.imgur.com/EHyR2nP.png'],
+            name: `Cannonball Raffle Ticket & $25 ${giftCard[user.gift]} Gift Card`,
+            // TODO: fix
+            images: ['../assets/logo.png'],
           },
           unit_amount: 2500,
         },

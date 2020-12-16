@@ -21,7 +21,7 @@ router.get('/', (req, res) => {
 
 // save user
 router.post('/register', async (req, res) => {
-  const newUser = req.body
+  const newUser = req.body;
   await addUser(newUser);
   res.redirect('/');
 })
@@ -39,7 +39,8 @@ router.delete('/user/:id', async (req, res) => {
 })
 
 router.post('/create-checkout-session', async (req, res) => {
-  const sessionId = await createStripeSession();
+  const userInfo = req.body;
+  const sessionId = await createStripeSession(userInfo);
   res.json({ id: sessionId });
 })
 
