@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
 // get users
 router.get('/users', async (req, res) => {
   const results = await getAllUsers();
-  res.send(results);
+  res.json(results);
 });
 
 router.delete('/user/:id', async (req, res) => {
