@@ -41,8 +41,22 @@ router.delete('/user/:id', async (req, res) => {
 router.post('/create-checkout-session', async (req, res) => {
   const userInfo = req.body;
   const sessionId = await createStripeSession(userInfo);
-  res.json({ id: sessionId });
+  res.json({
+    id: sessionId,
+    ...userInfo,
+  });
 })
+
+router.post('/webhook-success', async (req, res) => {
+    // get customer_email off of it then update paymentSuccess in mongoDb
+    try {
+      console.log("/webhooks POST route hit! req.body: ", req.body);
+      res.send(200);
+    } catch (err) {
+      console.log("/webhooks route error: ", err);
+      res.send(200);
+    }
+});
 
 router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
 

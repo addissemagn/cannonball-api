@@ -3,7 +3,7 @@ const stripe = require('stripe')(process.env.STRIPE_KEY);
 const createStripeSession = async (user) => {
   const giftCard = {
       uberEats: 'Uber Eats',
-      netfix: 'Netflix',
+      netflix: 'Netflix',
       apple: 'Apple',
   }
 
@@ -25,8 +25,8 @@ const createStripeSession = async (user) => {
       },
     ],
     mode: 'payment',
-    success_url: `${process.env.FRONTEND_URL}/success`,
-    cancel_url: `${process.env.FRONTEND_URL}/sign-up`,
+    success_url: `${process.env.FRONTEND_URL}/success?email=${user.email}`,
+    cancel_url: `${process.env.FRONTEND_URL}/sign-up?email=${user.email}`,
   });
 
   return session.id;
