@@ -54,6 +54,8 @@ router.post('/create-checkout-session', async (req, res) => {
 })
 
 router.post('/webhooks', async (req, res) => {
+    await connectDatabase();
+
     // get customer_email off of it then update paymentSuccess in mongoDb
     const { data, type } = req.body;
 
