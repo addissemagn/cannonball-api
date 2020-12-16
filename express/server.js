@@ -5,14 +5,23 @@ const serverless = require('serverless-http');
 const app = express();
 const bodyParser = require('body-parser');
 
+require("dotenv").config();
+
+const { connectDatabase, getAllUsers, addUser, deleteUser } = require('./database');
+
+connectDatabase();
+
 const router = express.Router();
+
 router.get('/', (req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.write('<h1>Hello from Express.js!</h1>');
-  res.end();
+  res.send('We\'re in boys!');
 });
-router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
-router.post('/', (req, res) => res.json({ postBody: req.body }));
+
+// get users
+router.get('/users', async (req, res) => {
+  const results = await getAllUsers();
+  res.send(results);
+});
 
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
