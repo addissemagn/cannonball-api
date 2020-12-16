@@ -4,6 +4,7 @@ const path = require('path');
 const serverless = require('serverless-http');
 const app = express();
 const bodyParser = require('body-parser');
+var cors = require("cors");
 
 require("dotenv").config();
 
@@ -36,6 +37,7 @@ router.delete('/user/:id', async (req, res) => {
   res.redirect('/');
 })
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
 app.use('/', router);
