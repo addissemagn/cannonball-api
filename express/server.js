@@ -21,7 +21,7 @@ connectDatabase();
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   res.send('API is working!');
 })
 
@@ -59,7 +59,7 @@ router.post('/webhooks', async (req, res) => {
 
     try {
       console.log("/webhooks POST route hit! req.body: ", req.body);
-      if (type === "checkout.session.completed") {
+      if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
         const { object } = data;
         const customer_email = object.customer_email;
 

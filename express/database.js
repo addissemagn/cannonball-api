@@ -33,7 +33,10 @@ const updatePaymentStatus = async (email) => {
   try {
     const res = await usersCollection.updateOne(
       { email: email },
-      { paymentSuccess: true }
+      {
+        $set: { paymentSuccess: true },
+        $currentDate: { lastModified: true }
+      }
     );
     return res;
   } catch (err) { console.log(err); }
