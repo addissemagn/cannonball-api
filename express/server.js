@@ -14,8 +14,15 @@ connectDatabase();
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.send('We\'re in boys!');
-});
+  res.send('API is working!');
+})
+
+// save user
+router.post('/register', async (req, res) => {
+  const newUser = req.body
+  await addUser(newUser);
+  res.redirect('/');
+})
 
 // get users
 router.get('/users', async (req, res) => {
@@ -23,9 +30,15 @@ router.get('/users', async (req, res) => {
   res.send(results);
 });
 
+router.delete('/user/:id', async (req, res) => {
+  const id = req.params.id;
+  await deleteUser(id);
+  res.redirect('/');
+})
+
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
-app.use('/', (req, res) => res.sendFile(path.join(__dirname, '../index.html')));
+app.use('/', router);
 
 module.exports = app;
 module.exports.handler = serverless(app);
