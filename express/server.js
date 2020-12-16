@@ -21,7 +21,7 @@ connectDatabase();
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
   res.send('API is working!');
 })
 
@@ -65,7 +65,7 @@ router.post('/webhooks', async (req, res) => {
 
         console.log(`update payment succes: ${customer_email}`);
 
-        await updatePaymentStatus();
+        await updatePaymentStatus(customer_email);
       }
       res.send(200);
     } catch (err) {
