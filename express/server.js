@@ -9,6 +9,7 @@ var cors = require("cors");
 require("dotenv").config();
 
 const { connectDatabase, getAllUsers, addUser, deleteUser } = require('./database');
+const { createStripeSession } = require('./stripe');
 
 connectDatabase();
 
@@ -35,6 +36,11 @@ router.delete('/user/:id', async (req, res) => {
   const id = req.params.id;
   await deleteUser(id);
   res.redirect('/');
+})
+
+router.post('/create-checkout-session', async (req, res) => {
+  const sessionId = await createStripeSession();
+  res.json({ id: sessionId });
 })
 
 app.use(cors());
