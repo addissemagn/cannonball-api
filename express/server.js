@@ -44,6 +44,8 @@ router.post('/create-checkout-session', async (req, res) => {
   res.json({ id: sessionId });
 })
 
+router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
