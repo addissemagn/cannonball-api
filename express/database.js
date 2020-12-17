@@ -49,10 +49,38 @@ const deleteUser = async (id) => {
   } catch (err) { console.log(err); }
 }
 
+const deleteUserByEmail = async (email) => {
+  try {
+    const res = await usersCollection.remove(
+      { email: email },
+    );
+    return res;
+  } catch (err) { console.log(err); }
+}
+
+// checks if user with email & payment successful exists
+const checkUserExistsByEmail = async (email) => {
+  try {
+    const res = await usersCollection.findOne({ email: email });
+    return res;
+  } catch (err) { console.log(err); }
+}
+
+// checks if user with email & payment successful exists
+const checkUserExistsByUofTEmail = async (email) => {
+  try {
+    const res = await usersCollection.findOne({ emailuoft: email });
+    return res;
+  } catch (err) { console.log(err); }
+}
+
 module.exports = {
     connectDatabase,
     getAllUsers,
     addUser,
     deleteUser,
+    deleteUserByEmail,
+    checkUserExistsByEmail,
+    checkUserExistsByUofTEmail,
     updatePaymentStatus,
 }

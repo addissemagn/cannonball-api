@@ -14,6 +14,9 @@ const {
   addUser,
   deleteUser,
   updatePaymentStatus,
+  deleteUserByEmail,
+  checkUserExistsByEmail,
+  checkUserExistsByUofTEmail,
 } = require("./database");
 const { createStripeSession } = require('./stripe');
 
@@ -44,6 +47,18 @@ router.delete('/user/:id', async (req, res) => {
   res.redirect('/');
 })
 
+router.get('/user/emailuoft/:email', async (req, res) => {
+  const email = req.params.email;
+  const resp = await checkUserExistsByUofTEmail(email);
+  res.json({ exists: resp === null ? false : true });
+})
+
+router.get('/user/email/:email', async (req, res) => {
+  const email = req.params.email;
+  const resp = await checkUserExistsByEmail(email);
+  res.json({ exists: resp === null ? false : true });
+})
+
 router.post('/create-checkout-session', async (req, res) => {
   const userInfo = req.body;
   const sessionId = await createStripeSession(userInfo);
@@ -61,13 +76,17 @@ router.post('/webhooks', async (req, res) => {
 
     try {
       console.log("/webhooks POST route hit! req.body: ", req.body);
+      const { object } = data;
+      const customer_email = object.customer_email;
+
       if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
-        const { object } = data;
-        const customer_email = object.customer_email;
-
         console.log(`update payment succes: ${customer_email}`);
-
         await updatePaymentStatus(customer_email);
+      }
+
+      if (type === "payment_intent.canceled") {
+        console.log(`cancel payment succes: ${customer_email}`);
+        await deleteUserByEmail(customer_email);
       }
       res.send(200);
     } catch (err) {

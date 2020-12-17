@@ -1,8 +1,8 @@
-# Cannonball 2T1 Backend 💥
+# Cannonball 2T1 API 💥
 
 ### Uses:
 - Node.js
-- Express
+- Express.js
 - MongoDB
 - Stripe
 - [Express.js on Netlify](https://github.com/neverendingqs/netlify-express) template
