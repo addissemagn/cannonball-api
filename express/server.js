@@ -59,6 +59,14 @@ router.get('/user/email/:email', async (req, res) => {
   res.json({ exists: resp === null ? false : true });
 })
 
+// send email
+router.post('/email', async (req, res) => {
+  const user = req.body;
+  const email = user.email;
+  console.log(user);
+  res.json({ email: email })
+})
+
 router.post('/create-checkout-session', async (req, res) => {
   const userInfo = req.body;
   const sessionId = await createStripeSession(userInfo);

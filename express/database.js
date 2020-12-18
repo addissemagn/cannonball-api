@@ -9,6 +9,9 @@ const connectDatabase = async () => {
     const client = await MongoClient.connect(connString, { useUnifiedTopology: true });
     db = client.db(process.env.DB_NAME);
     usersCollection = db.collection('users');
+    // TODO: add users to this collection on sign up and then the top one on payed
+    // this method also seems a lil dumb tho
+    // signedUpCollection = db.collection('registered-users');
     console.log('Connected to DB')
 
     return usersCollection;
