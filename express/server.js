@@ -1,12 +1,14 @@
 'use strict';
+
+require("dotenv").config();
+
 const express = require('express');
 const path = require('path');
 const serverless = require('serverless-http');
-const app = express();
 const bodyParser = require('body-parser');
-var cors = require("cors");
-
-require("dotenv").config();
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 const {
   connectDatabase,
@@ -17,15 +19,65 @@ const {
   deleteUserByEmail,
   checkUserExistsByEmail,
   checkUserExistsByUofTEmail,
+  createAdmin,
+  getAdmin,
 } = require("./database");
 const { createStripeSession } = require('./stripe');
 
-connectDatabase();
-
+const app = express();
 const router = express.Router();
+
+connectDatabase();
 
 router.get('/', (req, res) => {
   res.send('API is working!');
+})
+
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await getAdmin(username);
+
+    if (!user) {
+      return res.status(400).json({
+        message: `User ${username} does not exist`,
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(400).json({
+        message: "Incorrect password",
+      });
+
+    const payload = {
+      user: {
+        username: user.username,
+      },
+    };
+
+    console.log(`Logged in user: ${username}`)
+
+    jwt.sign(
+      payload,
+      "randomString",
+      {
+        expiresIn: 3600,
+      },
+      (err, token) => {
+        if (err) throw err;
+        res.status(200).json({
+          token,
+        });
+      }
+    );
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      message: "Server Error"
+    });
+  }
 })
 
 // save user
@@ -102,6 +154,19 @@ router.post('/webhooks', async (req, res) => {
       res.send(500);
     }
 });
+
+/*
+router.post('/create-admin', async (req, res) => {
+  const { username, password } = req.body;
+
+  const admin = { username: username };
+
+  const salt = await bcrypt.genSalt(10);
+  admin.password = await bcrypt.hash(password, salt);
+
+  await createAdmin(admin);
+})
+*/
 
 router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
 

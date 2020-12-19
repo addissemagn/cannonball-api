@@ -2,13 +2,14 @@ const MongoClient = require('mongodb').MongoClient;
 
 const connString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.alfbd.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
-let db, usersCollection;
+let db, usersCollection, adminCollection;
 
 const connectDatabase = async () => {
   try {
     const client = await MongoClient.connect(connString, { useUnifiedTopology: true });
     db = client.db(process.env.DB_NAME);
     usersCollection = db.collection('users');
+    adminCollection = db.collection('admin');
     // TODO: add users to this collection on sign up and then the top one on payed
     // this method also seems a lil dumb tho
     // signedUpCollection = db.collection('registered-users');
@@ -27,7 +28,7 @@ const addUser = async (user) => {
 
 const getAllUsers = async () => {
   try {
-    const res = await usersCollection.find().toArray();
+    const res = await adminCollection.find().toArray();
     return res;
   } catch (err) { console.log(err); }
 }
@@ -77,6 +78,20 @@ const checkUserExistsByUofTEmail = async (email) => {
   } catch (err) { console.log(err); }
 }
 
+const createAdmin = async (admin) => {
+  try {
+    const res = await adminCollection.insertOne(admin);
+    return res;
+  } catch (err) { console.log(err); }
+}
+
+const getAdmin = async (username) => {
+  try {
+    const res = await adminCollection.findOne({ username: username });
+    return res;
+  } catch (err) { console.log(err); }
+}
+
 module.exports = {
     connectDatabase,
     getAllUsers,
@@ -86,4 +101,6 @@ module.exports = {
     checkUserExistsByEmail,
     checkUserExistsByUofTEmail,
     updatePaymentStatus,
+    createAdmin,
+    getAdmin,
 }
