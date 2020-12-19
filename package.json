@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/neverendingqs/netlify-express#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.3",
     "stripe": "^8.129.0"
   },
