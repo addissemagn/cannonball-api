@@ -131,7 +131,7 @@ router.get('/user/email/:email', async (req, res) => {
 router.get('/user/emailuoft/:email', async (req, res) => {
   usersDb = await getUsersDb();
   const email = req.params.email;
-  const resp = await usersDb.checkExistsByUoftEmail(email);
+  const resp = await usersDb.checkExistsByUofTEmail(email);
   const exists = resp === null ? false : true;
 
   console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
