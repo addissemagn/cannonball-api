@@ -102,13 +102,21 @@ router.delete('/user/:id', async (req, res) => {
 router.get('/user/emailuoft/:email', async (req, res) => {
   const email = req.params.email;
   const resp = await checkUserExistsByUofTEmail(email);
-  res.json({ exists: resp === null ? false : true });
+  const exists = resp === null ? false : true;
+
+  console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
+
+  res.json({ exists });
 })
 
 router.get('/user/email/:email', async (req, res) => {
   const email = req.params.email;
   const resp = await checkUserExistsByEmail(email);
-  res.json({ exists: resp === null ? false : true });
+  const exists = resp === null ? false : true;
+
+  console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
+
+  res.json({ exists });
 })
 
 // send email
@@ -122,6 +130,9 @@ router.post('/email', async (req, res) => {
 router.post('/create-checkout-session', async (req, res) => {
   const userInfo = req.body;
   const sessionId = await createStripeSession(userInfo);
+
+  console.log(`Create stripe session for user ${userInfo.email}. Session id: ${sessionId}`)
+
   res.json({
     id: sessionId,
     ...userInfo,
@@ -135,17 +146,17 @@ router.post('/webhooks', async (req, res) => {
     const { data, type } = req.body;
 
     try {
-      console.log("/webhooks POST route hit! req.body: ", req.body);
+      console.log("POST /webhooks route hit. req.body: ", req.body);
       const { object } = data;
       const customer_email = object.customer_email;
 
       if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
-        console.log(`update payment succes: ${customer_email}`);
+        console.log(`Update payment succes: ${customer_email}`);
         await updatePaymentStatus(customer_email);
       }
 
       if (type === "payment_intent.canceled") {
-        console.log(`cancel payment succes: ${customer_email}`);
+        console.log(`Cancel payment succes: ${customer_email}`);
         await deleteUserByEmail(customer_email);
       }
       res.send(200);
