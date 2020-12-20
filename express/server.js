@@ -85,6 +85,7 @@ router.post('/login', async (req, res) => {
   }
 })
 
+// protected endpoint
 router.get('/admin', auth, async (req, res) => {
   usersDb = await getUsersDb();
   try {
@@ -95,6 +96,14 @@ router.get('/admin', auth, async (req, res) => {
   }
 })
 
+// protected endpoint, get users
+router.get('/users', auth, async (req, res) => {
+  usersDb = await getUsersDb();
+  const results = await usersDb.getAll();
+  res.json(results);
+});
+
+
 // save user
 router.post('/register', async (req, res) => {
   usersDb = await getUsersDb();
@@ -102,13 +111,6 @@ router.post('/register', async (req, res) => {
   await usersDb.save(user);
   res.redirect('/');
 })
-
-// get users
-router.get('/users', async (req, res) => {
-  usersDb = await getUsersDb();
-  const results = await usersDb.getAll();
-  res.json(results);
-});
 
 router.delete('/user/:id', async (req, res) => {
   usersDb = await getUsersDb();
