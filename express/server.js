@@ -12,15 +12,8 @@ const cors = require("cors");
 
 const {
   connectDatabase,
-  getAllUsers,
-  addUser,
-  deleteUser,
-  updatePaymentStatus,
-  deleteUserByEmail,
-  checkUserExistsByEmail,
-  checkUserExistsByUofTEmail,
-  createAdmin,
   getAdmin,
+  Users,
 } = require("./database");
 const { createStripeSession } = require('./stripe');
 
@@ -33,11 +26,11 @@ router.get('/', (req, res) => {
 })
 
 router.post('/login', async (req, res) => {
-  await connectDatabase();
+  const usersDb = new Users(await connectDatabase);
   const { username, password } = req.body;
 
   try {
-    const user = await getAdmin(username);
+    const user = await usersDb.getAdmin(username);
 
     if (!user) {
       return res.status(400).json({
@@ -82,30 +75,30 @@ router.post('/login', async (req, res) => {
 
 // save user
 router.post('/register', async (req, res) => {
-  await connectDatabase();
-  const newUser = req.body;
-  await addUser(newUser);
+  const usersDb = new Users(await connectDatabase());
+  const user = req.body;
+  await usersDb.save(user);
   res.redirect('/');
 })
 
 // get users
 router.get('/users', async (req, res) => {
-  await connectDatabase();
-  const results = await getAllUsers();
+  const usersDb = new Users(await connectDatabase());
+  const results = await usersDb.getAll();
   res.json(results);
 });
 
 router.delete('/user/:id', async (req, res) => {
-  await connectDatabase();
+  const usersDb = new Users(await connectDatabase());
   const id = req.params.id;
-  await deleteUser(id);
+  await usersDb.deleteById(id);
   res.redirect('/');
 })
 
-router.get('/user/emailuoft/:email', async (req, res) => {
-  await connectDatabase();
+router.get('/user/email/:email', async (req, res) => {
+  const usersDb = new Users(await connectDatabase());
   const email = req.params.email;
-  const resp = await checkUserExistsByUofTEmail(email);
+  const resp = await usersDb.checkExistsByEmail(email);
   const exists = resp === null ? false : true;
 
   console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
@@ -113,10 +106,10 @@ router.get('/user/emailuoft/:email', async (req, res) => {
   res.json({ exists });
 })
 
-router.get('/user/email/:email', async (req, res) => {
-  await connectDatabase();
+router.get('/user/emailuoft/:email', async (req, res) => {
+  const usersDb = new Users(await connectDatabase());
   const email = req.params.email;
-  const resp = await checkUserExistsByEmail(email);
+  const resp = await usersDb.checkExistsByUoftEmail(email);
   const exists = resp === null ? false : true;
 
   console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
@@ -126,7 +119,6 @@ router.get('/user/email/:email', async (req, res) => {
 
 // send email
 router.post('/email', async (req, res) => {
-  await connectDatabase();
   const user = req.body;
   const email = user.email;
   console.log(user);
@@ -134,7 +126,6 @@ router.post('/email', async (req, res) => {
 })
 
 router.post('/create-checkout-session', async (req, res) => {
-  await connectDatabase();
   const userInfo = req.body;
   const sessionId = await createStripeSession(userInfo);
 
@@ -147,8 +138,7 @@ router.post('/create-checkout-session', async (req, res) => {
 })
 
 router.post('/webhooks', async (req, res) => {
-    await connectDatabase();
-
+    const usersDb = new Users(await connectDatabase());
     // get customer_email off of it then update paymentSuccess in mongoDb
     const { data, type } = req.body;
 
@@ -159,12 +149,12 @@ router.post('/webhooks', async (req, res) => {
 
       if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
         console.log(`Update payment succes: ${customer_email}`);
-        await updatePaymentStatus(customer_email);
+        await usersDb.updatePaymentStatus(customer_email);
       }
 
       if (type === "payment_intent.canceled") {
         console.log(`Cancel payment succes: ${customer_email}`);
-        await deleteUserByEmail(customer_email);
+        await usersDb.deleteByEmail(customer_email);
       }
       res.send(200);
     } catch (err) {
@@ -173,20 +163,7 @@ router.post('/webhooks', async (req, res) => {
     }
 });
 
-/*
-router.post('/create-admin', async (req, res) => {
-  const { username, password } = req.body;
-
-  const admin = { username: username };
-
-  const salt = await bcrypt.genSalt(10);
-  admin.password = await bcrypt.hash(password, salt);
-
-  await createAdmin(admin);
-})
-*/
-
-router.get('/another', (req, res) => res.json({ route: req.originalUrl }));
+router.get('/test', (req, res) => res.json({ route: req.originalUrl }));
 
 app.use(cors());
 app.use(bodyParser.json());

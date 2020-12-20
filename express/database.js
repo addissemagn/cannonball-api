@@ -19,88 +19,77 @@ const connectDatabase = async () => {
   } catch (err) { console.log(err); }
 }
 
-const addUser = async (user) => {
-  try {
-    const res = await usersCollection.insertOne(user);
-    return res;
-  } catch (err) { console.log(err); }
-}
+class Users {
+  constructor(usersCollection) {
+    this.usersCollection = usersCollection;
+  };
 
-const getAllUsers = async () => {
-  try {
-    const res = await usersCollection.find().toArray();
-    return res;
-  } catch (err) { console.log(err); }
-}
+  async save(user) {
+    try {
+      const res = await this.usersCollection.insertOne(user);
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-const updatePaymentStatus = async (email) => {
-  try {
-    const res = await usersCollection.updateOne(
-      { email: email },
-      {
-        $set: { paymentSuccess: true },
-        $currentDate: { lastModified: true }
-      }
-    );
-    return res;
-  } catch (err) { console.log(err); }
-};
+  async getAll() {
+    try {
+      const res = await this.usersCollection.find().toArray();
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-const deleteUser = async (id) => {
-  try {
-    const res = await usersCollection.remove({_id: mongodb.ObjectID(id)});
-    return res;
-  } catch (err) { console.log(err); }
-}
+  async updatePaymentStatus(email) {
+    try {
+      const res = await this.usersCollection.updateOne(
+        { email: email },
+        {
+          $set: { paymentSuccess: true },
+          $currentDate: { lastModified: true }
+        }
+      );
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-const deleteUserByEmail = async (email) => {
-  try {
-    const res = await usersCollection.remove(
-      { email: email },
-    );
-    return res;
-  } catch (err) { console.log(err); }
-}
+  async deleteById(id) {
+    try {
+      const res = await this.usersCollection.remove({_id: mongodb.ObjectID(id)});
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-// checks if user with email & payment successful exists
-const checkUserExistsByEmail = async (email) => {
-  try {
-    const res = await usersCollection.findOne({ email: email });
-    return res;
-  } catch (err) { console.log(err); }
-}
+  async deleteByEmail(email) {
+    try {
+      const res = await this.usersCollection.remove(
+        { email: email },
+      );
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-// checks if user with email & payment successful exists
-const checkUserExistsByUofTEmail = async (email) => {
-  try {
-    const res = await usersCollection.findOne({ emailuoft: email });
-    return res;
-  } catch (err) { console.log(err); }
-}
+  async checkExistsByEmail(email) {
+    try {
+      const res = await this.usersCollection.findOne({ email: email });
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-const createAdmin = async (admin) => {
-  try {
-    const res = await adminCollection.insertOne(admin);
-    return res;
-  } catch (err) { console.log(err); }
-}
+  async checkExistsByUofTEmail(email) {
+    try {
+      const res = await this.usersCollection.findOne({ emailuoft: email });
+      return res;
+    } catch (err) { console.log(err); }
+  };
 
-const getAdmin = async (username) => {
-  try {
-    const res = await adminCollection.findOne({ username: username });
-    return res;
-  } catch (err) { console.log(err); }
+  async getAdmin(username) {
+    try {
+      const res = await adminCollection.findOne({ username: username });
+      return res;
+    } catch (err) { console.log(err); }
+  };
 }
 
 module.exports = {
     connectDatabase,
-    getAllUsers,
-    addUser,
-    deleteUser,
-    deleteUserByEmail,
-    checkUserExistsByEmail,
-    checkUserExistsByUofTEmail,
-    updatePaymentStatus,
-    createAdmin,
-    getAdmin,
+    Users,
 }
