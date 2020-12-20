@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
 
     jwt.sign(
       payload,
-      "randomString",
+      process.env.PRIVATE_KEY,
       {
         expiresIn: 3600,
       },
