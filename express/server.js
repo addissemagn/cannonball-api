@@ -89,8 +89,7 @@ router.get('/admin', auth, async (req, res) => {
   usersDb = await getUsersDb();
   try {
     const admin = await usersDb.getAdmin(req.user.username);
-    console.log(admin)
-    res.json(admin);
+    res.json({ username: admin.username });
   } catch (e) {
     res.send({ message: "Error fetching admin" });
   }
