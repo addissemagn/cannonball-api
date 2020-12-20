@@ -15,6 +15,7 @@ const {
   getAdmin,
   Users,
 } = require("./database");
+const auth = require("../middleware/auth");
 const { createStripeSession } = require('./stripe');
 
 const app = express();
@@ -49,10 +50,11 @@ router.post('/login', async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(400).json({
         message: "Incorrect password",
       });
+    }
 
     const payload = {
       user: {
@@ -80,6 +82,17 @@ router.post('/login', async (req, res) => {
     res.status(500).json({
       message: "Server Error"
     });
+  }
+})
+
+router.get('/admin', auth, async (req, res) => {
+  usersDb = await getUsersDb();
+  try {
+    const admin = await usersDb.getAdmin(req.user.username);
+    console.log(admin)
+    res.json(admin);
+  } catch (e) {
+    res.send({ message: "Error fetching admin" });
   }
 })
 
