@@ -20,13 +20,23 @@ const { createStripeSession } = require('./stripe');
 const app = express();
 const router = express.Router();
 
+let usersDb;
+
+const getUsersDb = async () => {
+  if (!usersDb) {
+    const { usersCollection, adminCollection } = await connectDatabase();
+    usersDb = new Users(usersCollection, adminCollection);
+  }
+
+  return usersDb;
+}
 
 router.get('/', (req, res) => {
   res.send('API is working!');
 })
 
 router.post('/login', async (req, res) => {
-  const usersDb = new Users(await connectDatabase);
+  usersDb = await getUsersDb();
   const { username, password } = req.body;
 
   try {
@@ -75,7 +85,7 @@ router.post('/login', async (req, res) => {
 
 // save user
 router.post('/register', async (req, res) => {
-  const usersDb = new Users(await connectDatabase());
+  usersDb = await getUsersDb();
   const user = req.body;
   await usersDb.save(user);
   res.redirect('/');
@@ -83,20 +93,20 @@ router.post('/register', async (req, res) => {
 
 // get users
 router.get('/users', async (req, res) => {
-  const usersDb = new Users(await connectDatabase());
+  usersDb = await getUsersDb();
   const results = await usersDb.getAll();
   res.json(results);
 });
 
 router.delete('/user/:id', async (req, res) => {
-  const usersDb = new Users(await connectDatabase());
+  usersDb = await getUsersDb();
   const id = req.params.id;
   await usersDb.deleteById(id);
   res.redirect('/');
 })
 
 router.get('/user/email/:email', async (req, res) => {
-  const usersDb = new Users(await connectDatabase());
+  usersDb = await getUsersDb();
   const email = req.params.email;
   const resp = await usersDb.checkExistsByEmail(email);
   const exists = resp === null ? false : true;
@@ -107,7 +117,7 @@ router.get('/user/email/:email', async (req, res) => {
 })
 
 router.get('/user/emailuoft/:email', async (req, res) => {
-  const usersDb = new Users(await connectDatabase());
+  usersDb = await getUsersDb();
   const email = req.params.email;
   const resp = await usersDb.checkExistsByUoftEmail(email);
   const exists = resp === null ? false : true;
@@ -138,29 +148,29 @@ router.post('/create-checkout-session', async (req, res) => {
 })
 
 router.post('/webhooks', async (req, res) => {
-    const usersDb = new Users(await connectDatabase());
-    // get customer_email off of it then update paymentSuccess in mongoDb
-    const { data, type } = req.body;
+  usersDb = await getUsersDb();
+  // get customer_email off of it then update paymentSuccess in mongoDb
+  const { data, type } = req.body;
 
-    try {
-      console.log("POST /webhooks route hit. req.body: ", req.body);
-      const { object } = data;
-      const customer_email = object.customer_email;
+  try {
+    console.log("POST /webhooks route hit. req.body: ", req.body);
+    const { object } = data;
+    const customer_email = object.customer_email;
 
-      if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
-        console.log(`Update payment succes: ${customer_email}`);
-        await usersDb.updatePaymentStatus(customer_email);
-      }
-
-      if (type === "payment_intent.canceled") {
-        console.log(`Cancel payment succes: ${customer_email}`);
-        await usersDb.deleteByEmail(customer_email);
-      }
-      res.send(200);
-    } catch (err) {
-      console.log("/webhooks route error: ", err);
-      res.send(500);
+    if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
+      console.log(`Update payment succes: ${customer_email}`);
+      await usersDb.updatePaymentStatus(customer_email);
     }
+
+    if (type === "payment_intent.canceled") {
+      console.log(`Cancel payment succes: ${customer_email}`);
+      await usersDb.deleteByEmail(customer_email);
+    }
+    res.send(200);
+  } catch (err) {
+    console.log("/webhooks route error: ", err);
+    res.send(500);
+  }
 });
 
 router.get('/test', (req, res) => res.json({ route: req.originalUrl }));

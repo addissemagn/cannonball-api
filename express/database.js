@@ -2,26 +2,22 @@ const MongoClient = require('mongodb').MongoClient;
 
 const connString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.alfbd.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
-let db, usersCollection, adminCollection;
-
 const connectDatabase = async () => {
   try {
     const client = await MongoClient.connect(connString, { useUnifiedTopology: true });
-    db = client.db(process.env.DB_NAME);
-    usersCollection = db.collection('users');
-    adminCollection = db.collection('admin');
-    // TODO: add users to this collection on sign up and then the top one on payed
-    // this method also seems a lil dumb tho
-    // signedUpCollection = db.collection('registered-users');
+    const db = client.db(process.env.DB_NAME);
+    const usersCollection = db.collection('users');
+    const adminCollection = db.collection('admin');
     console.log('Connected to DB')
 
-    return usersCollection;
+    return { usersCollection, adminCollection };
   } catch (err) { console.log(err); }
 }
 
 class Users {
-  constructor(usersCollection) {
+  constructor(usersCollection, adminCollection) {
     this.usersCollection = usersCollection;
+    this.adminCollection = adminCollection;
   };
 
   async save(user) {
@@ -83,7 +79,7 @@ class Users {
 
   async getAdmin(username) {
     try {
-      const res = await adminCollection.findOne({ username: username });
+      const res = await this.adminCollection.findOne({ username: username });
       return res;
     } catch (err) { console.log(err); }
   };
