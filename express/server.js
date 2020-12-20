@@ -27,13 +27,13 @@ const { createStripeSession } = require('./stripe');
 const app = express();
 const router = express.Router();
 
-connectDatabase();
 
 router.get('/', (req, res) => {
   res.send('API is working!');
 })
 
 router.post('/login', async (req, res) => {
+  await connectDatabase();
   const { username, password } = req.body;
 
   try {
@@ -82,6 +82,7 @@ router.post('/login', async (req, res) => {
 
 // save user
 router.post('/register', async (req, res) => {
+  await connectDatabase();
   const newUser = req.body;
   await addUser(newUser);
   res.redirect('/');
@@ -89,17 +90,20 @@ router.post('/register', async (req, res) => {
 
 // get users
 router.get('/users', async (req, res) => {
+  await connectDatabase();
   const results = await getAllUsers();
   res.json(results);
 });
 
 router.delete('/user/:id', async (req, res) => {
+  await connectDatabase();
   const id = req.params.id;
   await deleteUser(id);
   res.redirect('/');
 })
 
 router.get('/user/emailuoft/:email', async (req, res) => {
+  await connectDatabase();
   const email = req.params.email;
   const resp = await checkUserExistsByUofTEmail(email);
   const exists = resp === null ? false : true;
@@ -110,6 +114,7 @@ router.get('/user/emailuoft/:email', async (req, res) => {
 })
 
 router.get('/user/email/:email', async (req, res) => {
+  await connectDatabase();
   const email = req.params.email;
   const resp = await checkUserExistsByEmail(email);
   const exists = resp === null ? false : true;
@@ -121,6 +126,7 @@ router.get('/user/email/:email', async (req, res) => {
 
 // send email
 router.post('/email', async (req, res) => {
+  await connectDatabase();
   const user = req.body;
   const email = user.email;
   console.log(user);
@@ -128,6 +134,7 @@ router.post('/email', async (req, res) => {
 })
 
 router.post('/create-checkout-session', async (req, res) => {
+  await connectDatabase();
   const userInfo = req.body;
   const sessionId = await createStripeSession(userInfo);
 
