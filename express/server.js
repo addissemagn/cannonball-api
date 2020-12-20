@@ -85,7 +85,6 @@ router.post('/login', async (req, res) => {
   }
 })
 
-// protected endpoint
 router.get('/admin', auth, async (req, res) => {
   usersDb = await getUsersDb();
   try {
@@ -96,7 +95,6 @@ router.get('/admin', auth, async (req, res) => {
   }
 })
 
-// protected endpoint, get users
 router.get('/users', auth, async (req, res) => {
   usersDb = await getUsersDb();
   const results = await usersDb.getAll();
@@ -112,7 +110,7 @@ router.post('/register', async (req, res) => {
   res.redirect('/');
 })
 
-router.delete('/user/:id', async (req, res) => {
+router.delete('/user/:id', auth, async (req, res) => {
   usersDb = await getUsersDb();
   const id = req.params.id;
   await usersDb.deleteById(id);
