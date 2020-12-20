@@ -28,7 +28,7 @@ const addUser = async (user) => {
 
 const getAllUsers = async () => {
   try {
-    const res = await adminCollection.find().toArray();
+    const res = await usersCollection.find().toArray();
     return res;
   } catch (err) { console.log(err); }
 }
