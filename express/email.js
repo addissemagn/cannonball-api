@@ -57,9 +57,10 @@ const getGiftSelected = (gift) => {
 }
 
 const sendEmail = (user) => {
-    readHTMLFile(
-      __dirname + "public/email_template.html",
-      function (err, html) {
+    const publicPath = path.resolve(__dirname, "public");
+    const htmlPath = path.join(publicPath, "email_template.html");
+
+    readHTMLFile(htmlPath, (err, html) => {
         const { email, gift, raffle } = user;
 
         const raffleSelected = getRaffleSelected(raffle);
