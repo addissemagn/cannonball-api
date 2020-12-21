@@ -187,7 +187,12 @@ router.post('/webhooks', async (req, res) => {
 
 router.get('/test', (req, res) => res.json({ route: req.originalUrl }));
 
-app.use(cors());
+var corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  optionsSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use('/.netlify/functions/server', router);  // path must route to lambda
 app.use('/', router);
