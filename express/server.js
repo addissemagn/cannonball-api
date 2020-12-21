@@ -17,6 +17,7 @@ const {
 } = require("./database");
 const auth = require("../middleware/auth");
 const { createStripeSession } = require('./stripe');
+const { sendEmail } = require('./email');
 
 const app = express();
 const router = express.Router();
@@ -171,19 +172,32 @@ router.post('/webhooks', async (req, res) => {
 
     if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
       console.log(`Update payment succes: ${customer_email}`);
+
+      // update payment status to successul
       await usersDb.updatePaymentStatus(customer_email);
+
+      const user = await usersDb.getUserByEmail(customer_email);
+      sendEmail(user);
     }
 
     if (type === "payment_intent.canceled") {
       console.log(`Cancel payment succes: ${customer_email}`);
       await usersDb.deleteByEmail(customer_email);
     }
-    res.send(200);
+    res.sendStatus(200);
   } catch (err) {
     console.log("/webhooks route error: ", err);
-    res.send(500);
+    res.sendStatus(500);
   }
 });
+
+router.post('/send/:email', auth, async (req, res) => {
+  const email = req.params.email;
+  usersDb = await getUsersDb();
+  const user = await usersDb.getUserByEmail(email);
+  sendEmail(user);
+  res.sendStatus(200);
+})
 
 router.get('/test', (req, res) => res.json({ route: req.originalUrl }));
 

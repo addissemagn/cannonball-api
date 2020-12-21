@@ -27,6 +27,13 @@ class Users {
     } catch (err) { console.log(err); }
   };
 
+  async getUserByEmail(email) {
+    try {
+      const res = await this.usersCollection.findOne({ email: email });
+      return res;
+    } catch (err) { console.log(err); }
+  };
+
   async getAll() {
     try {
       const res = await this.usersCollection.find().toArray();
