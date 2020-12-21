@@ -4,5 +4,6 @@
 - Node.js
 - Express.js
 - MongoDB
-- Stripe
+- Stripe API
+- Gmail API
 - [Express.js on Netlify](https://github.com/neverendingqs/netlify-express) template
