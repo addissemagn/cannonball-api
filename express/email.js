@@ -58,7 +58,7 @@ const getGiftSelected = (gift) => {
 
 const sendEmail = (user) => {
     readHTMLFile(
-      __dirname + "email_template.html",
+      __dirname + "public/email_template.html",
       function (err, html) {
         const { email, gift, raffle } = user;
 
