@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
-var handlebars = require('handlebars');
-var fs = require('fs');
+const handlebars = require('handlebars');
+const fs = require('fs');
+const path = require('path');
 
 const authOptions = {
     type: 'oauth2',
@@ -10,7 +11,7 @@ const authOptions = {
     refreshToken: process.env.OAUTH_REFRESH_TOKEN,
 }
 
-var readHTMLFile = function(path, callback) {
+const readHTMLFile = function(path, callback) {
     fs.readFile(path, {encoding: 'utf-8'}, function (err, html) {
         if (err) {
             throw err;
@@ -66,28 +67,26 @@ const sendEmail = (user) => {
         const raffleSelected = getRaffleSelected(raffle);
         const giftSelected = getGiftSelected(gift)
 
-        console.log(raffleSelected);
-
-        var template = handlebars.compile(html);
+        const template = handlebars.compile(html);
 
         // dynamically replace in html template
-        var replacements = {
+        const replacements = {
           giftcard: giftSelected,
           raffle1: raffleSelected[0],
           raffle2: raffleSelected[1],
           raffle3: raffleSelected[2],
         };
 
-        var htmlToSend = template(replacements);
+        const htmlToSend = template(replacements);
 
-        var mailOptions = {
+        const mailOptions = {
             from: 'Cannonball 2T1',
             to: email,
             subject: 'Cannonball Ticket',
             html: htmlToSend,
         };
 
-        var transporter = nodemailer.createTransport({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: authOptions,
         });
