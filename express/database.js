@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const connString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.alfbd.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const connString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 const connectDatabase = async () => {
   try {
