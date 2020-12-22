@@ -1,6 +1,12 @@
 const STRIPE_KEY = process.env.PROD === 'true' ? process.env.PROD_STRIPE_KEY : process.env.DEV_STRIPE_KEY;
+const STRIPE_SIGNING_SECRET = process.env.PROD === 'true' ? process.env.PROD_STRIPE_SIGNING_SECRET : process.env.DEV_STRIPE_SIGNING_SECRET;
 
 const stripe = require('stripe')(STRIPE_KEY);
+
+const constructEvent = (body, sig) => {
+    const event = stripe.webhooks.constructEvent(body, sig, STRIPE_SIGNING_SECRET);
+    return event;
+}
 
 const createStripeSession = async (user) => {
   const giftCard = {
@@ -36,4 +42,5 @@ const createStripeSession = async (user) => {
 
 module.exports = {
     createStripeSession,
+    constructEvent,
 }

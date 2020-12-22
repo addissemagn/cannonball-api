@@ -16,7 +16,7 @@ const {
   Users,
 } = require("./database");
 const auth = require("../middleware/auth");
-const { createStripeSession } = require('./stripe');
+const { createStripeSession, constructEvent } = require('./stripe');
 const { sendEmail } = require('./email');
 
 const app = express();
@@ -181,14 +181,13 @@ router.post('/webhooks', async (req, res) => {
   usersDb = await getUsersDb();
   // get customer_email off of it then update paymentSuccess in mongoDb
   const { data, type } = req.body;
-  const STRIPE_SIGNING_SECRET = process.env.PROD === 'true' ? process.env.PROD_STRIPE_SIGNING_SECRET : process.env.DEV_STRIPE_SIGNING_SECRET;
 
   // check webhook signature
   const sig = req.headers['stripe-signature'];
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_SIGNING_SECRET);
+    event = constructEvent(req.body, sig)
   }
   catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
@@ -199,14 +198,18 @@ router.post('/webhooks', async (req, res) => {
     const { object } = data;
     const customer_email = object.customer_email;
 
-    if (type === "checkout.session.completed" || type === "checkout.session.async_payment_succeeded") {
-      console.log(`Update payment succes: ${customer_email}`);
-
-      // update payment status to successul
-      await usersDb.updatePaymentStatus(customer_email);
-
-      const user = await usersDb.getUserByEmail(customer_email);
-      await sendEmail(user);
+    // Handle the event
+    switch (type) {
+      case "checkout.session.completed" || "checkout.session.async_payment_succeeded":
+        console.log(`Payment was successful! Email: ${customer_email}`);
+        // update payment status to successul
+        await usersDb.updatePaymentStatus(customer_email);
+        // send email
+        const user = await usersDb.getUserByEmail(customer_email);
+        await sendEmail(user);
+        break;
+      default:
+        console.log(`Unhandled event type ${event.type}`);
     }
 
     res.sendStatus(200);
