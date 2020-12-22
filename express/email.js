@@ -70,6 +70,24 @@ const getHTMLFile = async (url) => {
     });
 }
 
+const wrapedSendMail = async (mailOptions) => {
+    return new Promise((resolve, reject)=>{
+        let transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: authOptions,
+        });
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log("error is "+error);
+                resolve(false); // or use rejcet(false) but then you will have to handle errors
+            } else {
+                console.log('Email sent: ' + info.response);
+                resolve(true);
+            }
+        });
+    })
+}
 
 const sendEmail = async (user) => {
     let html;
@@ -105,22 +123,24 @@ const sendEmail = async (user) => {
         html: htmlToSend,
     };
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: authOptions,
-    });
+    console.log(`Attempting emailing: ${email}`)
 
-    console.log(`Sending email to ${email}`)
+    // const transporter = nodemailer.createTransport({
+    //     service: 'gmail',
+    //     auth: authOptions,
+    // });
 
-    transporter.sendMail(mailOptions, (err, res) => {
-        if (err) {
-            console.log(err);
-            return 500;
-        } else {
-            console.log(JSON.stringify(res));
-            return 200;
-        }
-    });
+    // transporter.sendMail(mailOptions, (err, res) => {
+    //     if (err) {
+    //         console.log(err);
+    //         return 500;
+    //     } else {
+    //         console.log(JSON.stringify(res));
+    //         return 200;
+    //     }
+    // });
+
+    await wrapedSendMail(mailOptions)
 }
 
 // const sendEmail = (user) => {
