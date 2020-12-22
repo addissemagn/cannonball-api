@@ -209,7 +209,7 @@ router.post('/webhooks', async (req, res) => {
         await sendEmail(user);
         break;
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        console.log(`Unhandled event type ${type}`);
     }
 
     res.sendStatus(200);
