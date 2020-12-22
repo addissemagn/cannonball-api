@@ -1,6 +1,20 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const connString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASS}@cluster0.${process.env.DB_CLUSTER}.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+const DB_USERNAME, DB_PASS, DB_NAME;
+
+if (process.env.PROD === 'true') {
+  DB_USERNAME = process.env.PROD_DB_USERNAME;
+  DB_PASS = process.env.PROD_DB_PASS;
+  DB_NAME = process.env.PROD_DB_NAME;
+  DB_CLUSTER = process.env.PROD_DB_CLUSTER;
+} else {
+  DB_USERNAME = process.env.DEV_DB_USERNAME;
+  DB_PASS = process.env.DEV_DB_PASS;
+  DB_NAME = process.env.DEV_DB_NAME;
+  DB_CLUSTER = process.env.DEV_DB_CLUSTER;
+}
+
+const connString = `mongodb+srv://${DB_USERNAME}:${DB_PASS}@cluster0.${DB_CLUSTER}.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`;
 
 const connectDatabase = async () => {
   try {

@@ -1,4 +1,6 @@
-const stripe = require('stripe')(process.env.STRIPE_KEY);
+const STRIPE_KEY = process.env.PROD === 'true' ? process.env.PROD_STRIPE_KEY : process.env.DEV_STRIPE_KEY;
+
+const stripe = require('stripe')(STRIPE_KEY);
 
 const createStripeSession = async (user) => {
   const giftCard = {
