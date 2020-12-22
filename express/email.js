@@ -80,10 +80,10 @@ const wrapedSendMail = async (mailOptions) => {
         transporter.sendMail(mailOptions, function(error, info){
             if (error) {
                 console.log("error is "+error);
-                resolve(false);
+                resolve(500);
             } else {
                 console.log('Email sent: ' + info.response);
-                resolve(true);
+                resolve(200);
             }
         });
     })
@@ -140,7 +140,8 @@ const sendEmail = async (user) => {
     //     }
     // });
 
-    await wrapedSendMail(mailOptions)
+    const res = await wrapedSendMail(mailOptions)
+    return res;
 }
 
 // const sendEmail = (user) => {

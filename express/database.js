@@ -68,6 +68,18 @@ class Users {
     } catch (err) { console.log(err); }
   };
 
+  async updateEmailStatus(email) {
+    try {
+      const res = await this.usersCollection.updateOne(
+        { email: email },
+        {
+          $set: { emailStatus: true },
+        }
+      );
+      return res;
+    } catch (err) { console.log(err); }
+  };
+
   async deleteById(id) {
     try {
       const res = await this.usersCollection.remove({_id: mongodb.ObjectID(id)});

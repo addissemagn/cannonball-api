@@ -229,9 +229,15 @@ router.post('/send/:email', async (req, res) => {
     const user = await usersDb.getUserByEmail(email);
 
     const statusCode = await sendEmail(user);
-    res.sendStatus(statusCode == 500 ? 500 : 200);
+
+    if (statusCode == 200) {
+      await usersDb.updateEmailStatus(email);
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(500);
+    }
   } else {
-    console.log(`Trying to send email to a user that DNE: ${email}`)
+    console.log(`Trying to send email to a paid user that DNE: ${email}`)
     res.sendStatus(404);
   }
 })
