@@ -181,6 +181,18 @@ router.post('/webhooks', async (req, res) => {
   usersDb = await getUsersDb();
   // get customer_email off of it then update paymentSuccess in mongoDb
   const { data, type } = req.body;
+  const STRIPE_SIGNING_SECRET = process.env.PROD === 'true' ? process.env.PROD_STRIPE_SIGNING_SECRET : process.env.DEV_STRIPE_SIGNING_SECRET;
+
+  // check webhook signature
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(request.body, sig, STRIPE_SIGNING_SECRET);
+  }
+  catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+  }
 
   try {
     console.log("POST /webhooks route hit. req.body: ", req.body);
