@@ -33,7 +33,7 @@ const createStripeSession = async (user) => {
       },
     ],
     mode: 'payment',
-    success_url: `${process.env.FRONTEND_URL}/success?email=${customer_email}`,
+    success_url: `${process.env.FRONTEND_URL}/success?email=${user.email}`,
     cancel_url: `${process.env.FRONTEND_URL}/ticket`,
   });
 
