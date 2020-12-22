@@ -205,8 +205,8 @@ router.post('/webhooks', async (req, res) => {
         // update payment status to successul
         await usersDb.updatePaymentStatus(customer_email);
         // send email
-        const user = await usersDb.getUserByEmail(customer_email);
-        await sendEmail(user);
+        // const user = await usersDb.getUserByEmail(customer_email);
+        // await sendEmail(user);
         break;
       default:
         console.log(`Unhandled event type ${type}`);
@@ -216,13 +216,24 @@ router.post('/webhooks', async (req, res) => {
   }
 });
 
-router.post('/send/:email', auth, async (req, res) => {
-  const email = req.params.email;
+// send email to paid user
+router.post('/send/:email', async (req, res) => {
   usersDb = await getUsersDb();
-  const user = await usersDb.getUserByEmail(email);
+  const email = req.params.email;
 
-  const statusCode = await sendEmail(user);
-  res.sendStatus(statusCode == 500 ? 500 : 200);
+  const resp = await usersDb.checkExistsByEmail(email, 'paid');
+
+  // user exists
+  if (resp !== null ) {
+    console.log(`Sending email to: ${email}`)
+    const user = await usersDb.getUserByEmail(email);
+
+    const statusCode = await sendEmail(user);
+    res.sendStatus(statusCode == 500 ? 500 : 200);
+  } else {
+    console.log(`Trying to send email to a user that DNE: ${email}`)
+    res.sendStatus(404);
+  }
 })
 
 // router.get('/beep', auth, async (req, res) => {
