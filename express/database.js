@@ -93,16 +93,24 @@ class Users {
     } catch (err) { console.log(err); }
   };
 
-  async checkExistsByEmail(email) {
+  async checkExistsByEmail(email, paymentStatus) {
+    const query = {
+      email: email,
+      ...paymentStatus === 'paid' &&  { paymentSuccess: true },
+    };
     try {
-      const res = await this.usersCollection.findOne({ email: email, paymentSuccess: true });
+      const res = await this.usersCollection.findOne(query);
       return res;
     } catch (err) { console.log(err); }
   };
 
-  async checkExistsByUofTEmail(email) {
+  async checkExistsByUofTEmail(email, paymentStatus) {
+    const query = {
+      emailuoft: email,
+      ...paymentStatus === 'paid' &&  { paymentSuccess: true },
+    };
     try {
-      const res = await this.usersCollection.findOne({ emailuoft: email, paymentSuccess: true });
+      const res = await this.usersCollection.findOne(query);
       return res;
     } catch (err) { console.log(err); }
   };

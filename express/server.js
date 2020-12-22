@@ -126,27 +126,6 @@ router.post('/register', async (req, res) => {
   res.redirect('/');
 })
 
-const { promisify } = require('util');
-const { resolve } = require('path');
-const fs = require('fs');
-const readdir = promisify(fs.readdir);
-const stat = promisify(fs.stat);
-
-async function getFiles(dir) {
-  const subdirs = await readdir(dir);
-  const files = await Promise.all(subdirs.map(async (subdir) => {
-    const res = resolve(dir, subdir);
-    return (await stat(res)).isDirectory() ? getFiles(res) : res;
-  }));
-  return files.reduce((a, f) => a.concat(f), []);
-}
-
-router.get('/files', async (req, res) => {
-  getFiles(__dirname)
-  .then(files => console.log(files))
-  .catch(e => console.error(e));
-});
-
 router.delete('/user/:id', auth, async (req, res) => {
   usersDb = await getUsersDb();
   const id = req.params.id;
@@ -158,7 +137,7 @@ router.delete('/user/:id', auth, async (req, res) => {
 router.get('/user/email/:email', async (req, res) => {
   usersDb = await getUsersDb();
   const email = req.params.email;
-  const resp = await usersDb.checkExistsByEmail(email);
+  const resp = await usersDb.checkExistsByEmail(email, 'paid');
   const exists = resp === null ? false : true;
 
   console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
@@ -170,7 +149,7 @@ router.get('/user/email/:email', async (req, res) => {
 router.get('/user/emailuoft/:email', async (req, res) => {
   usersDb = await getUsersDb();
   const email = req.params.email;
-  const resp = await usersDb.checkExistsByUofTEmail(email);
+  const resp = await usersDb.checkExistsByUofTEmail(email, 'paid');
   const exists = resp === null ? false : true;
 
   console.log(`User by email ${email} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
@@ -233,6 +212,11 @@ router.post('/send/:email', auth, async (req, res) => {
   const statusCode = await sendEmail(user);
   res.sendStatus(statusCode == 500 ? 500 : 200);
 })
+
+// router.get('/beep', auth, async (req, res) => {
+//   usersDb = await getUsersDb();
+//   usersDb.usersCollection.remove({})
+// })
 
 router.get('/test', (req, res) => res.json({ route: req.originalUrl }));
 
