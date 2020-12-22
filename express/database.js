@@ -1,6 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const DB_USERNAME, DB_PASS, DB_NAME;
+let DB_USERNAME = "", DB_PASS = "", DB_NAME = "";
 
 if (process.env.PROD === 'true') {
   DB_USERNAME = process.env.PROD_DB_USERNAME;
