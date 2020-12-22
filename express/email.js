@@ -58,7 +58,9 @@ const getGiftSelected = (gift) => {
 }
 
 const sendEmail = (user) => {
-    const publicPath = path.resolve(__dirname, "../public");
+    // local
+    // const publicPath = path.resolve(__dirname, "../public");
+    const publicPath = path.resolve(__dirname, "public");
     const htmlPath = path.join(publicPath, "email_template.html");
 
     readHTMLFile(htmlPath, (err, html) => {
