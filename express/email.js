@@ -115,10 +115,10 @@ const sendEmail = async (user) => {
     transporter.sendMail(mailOptions, (err, res) => {
         if (err) {
             console.log(err);
-            resolve(500);
+            return 500;
         } else {
             console.log(JSON.stringify(res));
-            resolve(200);
+            return 200;
         }
     });
 }
