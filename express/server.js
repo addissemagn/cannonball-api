@@ -183,15 +183,15 @@ router.post('/webhooks', async (req, res) => {
   const { data, type } = req.body;
 
   // check webhook signature
-  const sig = req.headers['stripe-signature'];
-  let event;
+  // const sig = req.headers['stripe-signature'];
+  // let event;
 
-  try {
-    event = constructEvent(req.body, sig)
-  }
-  catch (err) {
-    res.status(400).send(`Webhook Error: ${err.message}`);
-  }
+  // try {
+  //   event = constructEvent(req.body, sig)
+  // }
+  // catch (err) {
+  //   res.status(400).send(`Webhook Error: ${err.message}`);
+  // }
 
   try {
     console.log("POST /webhooks route hit. req.body: ", req.body);
