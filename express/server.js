@@ -107,6 +107,20 @@ router.get('/users', auth, async (req, res) => {
 router.post('/register', async (req, res) => {
   usersDb = await getUsersDb();
   const user = req.body;
+  // if non-paying user exists with this email then delete it
+  let resp = await usersDb.checkExistsByEmail(user.email);
+  const existsEmail = resp === null ? false : true;
+  if (existsEmail) {
+    await usersDb.deleteByEmail(user.email);
+  }
+
+  resp = await usersDb.checkExistsByUofTEmail(user.emailuoft);
+  const existsEmailUofT = resp === null ? false : true;
+  if (existsEmailUofT) {
+    await usersDb.deleteByEmailUofT(user.emailuoft);
+  }
+
+  // save user
   await usersDb.save(user);
   res.redirect('/');
 })
@@ -118,6 +132,7 @@ router.delete('/user/:id', auth, async (req, res) => {
   res.redirect('/');
 })
 
+// checks if paid user exists with email
 router.get('/user/email/:email', async (req, res) => {
   usersDb = await getUsersDb();
   const email = req.params.email;
@@ -129,6 +144,7 @@ router.get('/user/email/:email', async (req, res) => {
   res.json({ exists });
 })
 
+// checks if paid user exists with email
 router.get('/user/emailuoft/:email', async (req, res) => {
   usersDb = await getUsersDb();
   const email = req.params.email;

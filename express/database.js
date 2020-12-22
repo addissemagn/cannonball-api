@@ -84,16 +84,25 @@ class Users {
     } catch (err) { console.log(err); }
   };
 
+  async deleteByEmailUofT(emailuoft) {
+    try {
+      const res = await this.usersCollection.remove(
+        { emailuoft: emailuoft },
+      );
+      return res;
+    } catch (err) { console.log(err); }
+  };
+
   async checkExistsByEmail(email) {
     try {
-      const res = await this.usersCollection.findOne({ email: email });
+      const res = await this.usersCollection.findOne({ email: email, paymentSuccess: true });
       return res;
     } catch (err) { console.log(err); }
   };
 
   async checkExistsByUofTEmail(email) {
     try {
-      const res = await this.usersCollection.findOne({ emailuoft: email });
+      const res = await this.usersCollection.findOne({ emailuoft: email, paymentSuccess: true });
       return res;
     } catch (err) { console.log(err); }
   };
