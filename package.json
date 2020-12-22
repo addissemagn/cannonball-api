@@ -31,6 +31,7 @@
     "mongodb": "^3.6.3",
     "nodemailer": "^6.4.17",
     "path": "^0.12.7",
+    "request": "^2.88.2",
     "stripe": "^8.129.0"
   },
   "devDependencies": {

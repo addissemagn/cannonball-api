@@ -233,8 +233,9 @@ router.post('/send/:email', auth, async (req, res) => {
   const email = req.params.email;
   usersDb = await getUsersDb();
   const user = await usersDb.getUserByEmail(email);
-  sendEmail(user);
-  res.sendStatus(200);
+
+  const statusCode = await sendEmail(user);
+  res.sendStatus(statusCode == 500 ? 500 : 200);
 })
 
 router.get('/test', (req, res) => res.json({ route: req.originalUrl }));
