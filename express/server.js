@@ -215,13 +215,9 @@ router.post('/webhooks', async (req, res) => {
       await usersDb.updatePaymentStatus(customer_email);
 
       const user = await usersDb.getUserByEmail(customer_email);
-      sendEmail(user);
+      await sendEmail(user);
     }
 
-    if (type === "payment_intent.canceled") {
-      console.log(`Cancel payment succes: ${customer_email}`);
-      await usersDb.deleteByEmail(customer_email);
-    }
     res.sendStatus(200);
   } catch (err) {
     console.log("/webhooks route error: ", err);
