@@ -211,11 +211,8 @@ router.post('/webhooks', async (req, res) => {
       default:
         console.log(`Unhandled event type ${type}`);
     }
-
-    res.sendStatus(200);
   } catch (err) {
     console.log("/webhooks route error: ", err);
-    res.sendStatus(500);
   }
 });
 
