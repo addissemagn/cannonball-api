@@ -73,7 +73,7 @@ class Users {
       const res = await this.usersCollection.updateOne(
         { email: email },
         {
-          $set: { emailStatus: true },
+          $set: { emailSuccess: true },
         }
       );
       return res;
