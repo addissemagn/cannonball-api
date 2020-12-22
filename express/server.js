@@ -107,17 +107,18 @@ router.get('/users', auth, async (req, res) => {
 router.post('/register', async (req, res) => {
   usersDb = await getUsersDb();
   const user = req.body;
+
   // if non-paying user exists with this email then delete it
   let resp = await usersDb.checkExistsByEmail(user.email);
-  const existsEmail = resp === null ? false : true;
-  if (existsEmail) {
+  if (resp !== null) {
     await usersDb.deleteByEmail(user.email);
+    console.log(`Duplicate email. Deleted ${user.email}`)
   }
 
   resp = await usersDb.checkExistsByUofTEmail(user.emailuoft);
-  const existsEmailUofT = resp === null ? false : true;
-  if (existsEmailUofT) {
+  if (resp !== null) {
     await usersDb.deleteByEmailUofT(user.emailuoft);
+    console.log(`Duplicate UofT Email. Deleted ${user.emailuoft}`)
   }
 
   // save user
@@ -247,6 +248,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static('public'))
 app.use('/public', express.static('public'))
+app.use('/.netlify/functions/server/public', express.static('public'));  // path must route to lambda
 app.use('/.netlify/functions/server', router);  // path must route to lambda
 app.use('/', router);
 
