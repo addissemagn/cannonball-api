@@ -60,8 +60,8 @@ const getGiftSelected = (gift) => {
 const sendEmail = (user) => {
     // local
     // const publicPath = path.resolve(__dirname, "../public");
-    const publicPath = path.resolve(__dirname, "static");
-    const htmlPath = path.join(publicPath, "email_template.html");
+    // const publicPath = path.resolve(__dirname, "public");
+    const htmlPath = path.join(__dirname, '..', 'public', 'email_template.html');
 
     readHTMLFile(htmlPath, (err, html) => {
         const { email, gift, raffle } = user;
@@ -80,6 +80,7 @@ const sendEmail = (user) => {
         };
 
         const htmlToSend = template(replacements);
+        console.log(htmlToSend);
 
         const mailOptions = {
             from: 'Cannonball 2T1',

@@ -247,8 +247,7 @@ var corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(express.static('public'))
-app.use('/static', express.static('public'))
-app.use('/.netlify/functions/static', express.static('public'));  // path must route to lambda
+app.use('/public', express.static('public'))
 app.use('/.netlify/functions/server', router);  // path must route to lambda
 app.use('/', router);
 
