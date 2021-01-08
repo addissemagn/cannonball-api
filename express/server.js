@@ -107,7 +107,7 @@ router.post('/raffle', async (req, res) => {
   usersDb = await getUsersDb();
   const user = req.body;
 
-  await usersDb.saveExtraRaffleEntry(user);
+  await usersDb.addExtraEntry(user);
   res.redirect('/');
 })
 
