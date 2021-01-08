@@ -53,7 +53,7 @@ class Users {
 
   async checkExtraEntryExistsByUofTEmail(emailuoft) {
     const query = {
-      emailuoft: formatString(emailuoft),
+      emailuoft: emailuoft,
     };
     const settingsCaseInsensitive = {
       collation: {
@@ -69,7 +69,7 @@ class Users {
 
   async getUserByEmail(email) {
     try {
-      const res = await this.usersCollection.findOne({ email: formatString(email) });
+      const res = await this.usersCollection.findOne({ email: email });
       return res;
     } catch (err) { console.log(err); }
   };
