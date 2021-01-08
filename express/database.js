@@ -75,6 +75,13 @@ class Users {
     } catch (err) { console.log(err); }
   };
 
+  async getAllWithExtraRaffleEntry() {
+    try {
+      const res = await this.raffleCollection.find().toArray();
+      return res;
+    } catch (err) { console.log(err); }
+  };
+
   async updatePaymentStatus(email) {
     try {
       const res = await this.usersCollection.updateOne(

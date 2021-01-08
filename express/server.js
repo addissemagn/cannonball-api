@@ -102,6 +102,12 @@ router.get('/users', auth, async (req, res) => {
   res.json(results);
 });
 
+router.get('/users/raffle', auth, async (req, res) => {
+  usersDb = await getUsersDb();
+  const results = await usersDb.getAllWithExtraRaffleEntry();
+  res.json(results);
+});
+
 // save extra raffle entry for user
 router.post('/raffle', async (req, res) => {
   usersDb = await getUsersDb();
