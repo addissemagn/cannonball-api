@@ -53,17 +53,23 @@ class Users {
 
   async checkExtraEntryExistsByUofTEmail(emailuoft) {
     const query = {
-      emailuoft: emailuoft,
+      emailuoft: formatString(emailuoft),
+    };
+    const settingsCaseInsensitive = {
+      collation: {
+        locale: "en",
+        strength: 2,
+      },
     };
     try {
-      const res = await this.raffleCollection.findOne(query);
+      const res = await this.raffleCollection.findOne(query, settingsCaseInsensitive);
       return res;
     } catch (err) { console.log(err); }
   };
 
   async getUserByEmail(email) {
     try {
-      const res = await this.usersCollection.findOne({ email: email });
+      const res = await this.usersCollection.findOne({ email: formatString(email) });
       return res;
     } catch (err) { console.log(err); }
   };
@@ -137,8 +143,14 @@ class Users {
       email: email,
       ...paymentStatus === 'paid' &&  { paymentSuccess: true },
     };
+    const settingsCaseInsensitive = {
+      collation: {
+        locale: "en",
+        strength: 2,
+      },
+    };
     try {
-      const res = await this.usersCollection.findOne(query);
+      const res = await this.usersCollection.findOne(query, settingsCaseInsensitive);
       return res;
     } catch (err) { console.log(err); }
   };
@@ -148,8 +160,14 @@ class Users {
       emailuoft: email,
       ...paymentStatus === 'paid' &&  { paymentSuccess: true },
     };
+    const settingsCaseInsensitive = {
+      collation: {
+        locale: "en",
+        strength: 2,
+      },
+    };
     try {
-      const res = await this.usersCollection.findOne(query);
+      const res = await this.usersCollection.findOne(query, settingsCaseInsensitive);
       return res;
     } catch (err) { console.log(err); }
   };
