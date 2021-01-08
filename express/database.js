@@ -22,21 +22,41 @@ const connectDatabase = async () => {
     const db = client.db(process.env.DB_NAME);
     const usersCollection = db.collection('users');
     const adminCollection = db.collection('admin');
+    // TODO: change unintuitive name. this collection tracks users that have gained an extra raffle entry.
+    const raffleCollection = db.collection('raffle');
     console.log('Connected to DB')
 
-    return { usersCollection, adminCollection };
+    return { usersCollection, adminCollection, raffleCollection };
   } catch (err) { console.log(err); }
 }
 
 class Users {
-  constructor(usersCollection, adminCollection) {
+  constructor(usersCollection, adminCollection, raffleCollection) {
     this.usersCollection = usersCollection;
     this.adminCollection = adminCollection;
+    this.raffleCollection = raffleCollection;
   };
 
   async save(user) {
     try {
       const res = await this.usersCollection.insertOne(user);
+      return res;
+    } catch (err) { console.log(err); }
+  };
+
+  async addExtraEntry(user) {
+    try {
+      const res = await this.raffleCollection.insertOne(user);
+      return res;
+    } catch (err) { console.log(err); }
+  };
+
+  async checkExtraEntryExistsByUofTEmail(emailuoft) {
+    const query = {
+      emailuoft: emailuoft,
+    };
+    try {
+      const res = await this.raffleCollection.findOne(query);
       return res;
     } catch (err) { console.log(err); }
   };

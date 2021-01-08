@@ -26,8 +26,8 @@ let usersDb;
 
 const getUsersDb = async () => {
   if (!usersDb) {
-    const { usersCollection, adminCollection } = await connectDatabase();
-    usersDb = new Users(usersCollection, adminCollection);
+    const { usersCollection, adminCollection, raffleCollection } = await connectDatabase();
+    usersDb = new Users(usersCollection, adminCollection, raffleCollection);
   }
 
   return usersDb;
@@ -102,6 +102,25 @@ router.get('/users', auth, async (req, res) => {
   res.json(results);
 });
 
+// save extra raffle entry for user
+router.post('/raffle', async (req, res) => {
+  usersDb = await getUsersDb();
+  const user = req.body;
+
+  await usersDb.saveExtraRaffleEntry(user);
+  res.redirect('/');
+})
+
+router.get('/raffle/email/:emailuoft', async (req, res) => {
+  usersDb = await getUsersDb();
+  const emailuoft = req.params.emailuoft;
+  const resp = await usersDb.checkExtraEntryExistsByUofTEmail(emailuoft);
+  const exists = resp === null ? false : true;
+
+  console.log(`User by email ${emailuoft} ${exists ? 'exists. User:' : 'does not exist.'}`, resp);
+
+  res.json({ exists });
+})
 
 // save user
 router.post('/register', async (req, res) => {
